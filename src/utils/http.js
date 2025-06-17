@@ -1,6 +1,6 @@
 import { QueryClient } from "@tanstack/react-query";
 
-export const queryClient = new QueryClient()
+export const queryClient = new QueryClient();
 
 export async function fetchEvents({ signal, searchTerm }) {
   let url = "http://localhost:3000/events";
@@ -23,14 +23,13 @@ export async function fetchEvents({ signal, searchTerm }) {
 }
 
 export async function createNewEvent(formData) {
-
-  const response = await fetch("http://localhost:3000/events", { 
+  const response = await fetch("http://localhost:3000/events", {
     method: "POST",
     headers: {
       "Content-type": "application/json",
     },
-    body: JSON.stringify(formData)
-   });
+    body: JSON.stringify(formData),
+  });
 
   if (!response.ok) {
     const error = new Error("An error occurred while creating the event");
@@ -45,8 +44,9 @@ export async function createNewEvent(formData) {
 }
 
 export async function fetchSelectableImages({ signal }) {
-
-  const response = await fetch("http://localhost:3000/events/images", { signal });
+  const response = await fetch("http://localhost:3000/events/images", {
+    signal,
+  });
 
   if (!response.ok) {
     const error = new Error("An error occurred while fetching the images");
@@ -57,4 +57,39 @@ export async function fetchSelectableImages({ signal }) {
 
   const { images } = await response.json();
   return images;
+}
+
+export async function fetchEventDetails({ signal, eventId }) {
+  let url = `http://localhost:3000/events/${eventId}`;
+  const response = await fetch(url, { signal });
+
+  if (!response.ok) {
+    const error = new Error(
+      "An error occurred while fetching the event details"
+    );
+    error.code = response.status;
+    error.info = await response.json();
+    throw error;
+  }
+
+  const { event } = await response.json();
+
+  return event;
+}
+
+export async function deleteEvent({ eventId }) {
+  const response = await fetch(`http://localhost:3000/events/${eventId}`, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    const error = new Error("An error occurred while deleting the event");
+    error.code = response.status;
+    error.info = await response.json();
+    throw error;
+  }
+
+  const { message } = await response.json();
+
+  return message;
 }
