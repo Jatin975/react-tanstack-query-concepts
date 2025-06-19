@@ -19,7 +19,7 @@ export default function EventDetails() {
     queryFn: ({ signal }) => fetchEventDetails({ signal, eventId })
   })
 
-  const { mutate, isPending: isDeletingEvent } = useMutation({
+  const { mutate, isPending: isDeletingEvent, isError: isDeletingError, error: deletingError } = useMutation({
     mutationFn: () => deleteEvent({ eventId }),
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -51,8 +51,7 @@ export default function EventDetails() {
   }
 
   if (isError) {
-    content = <div id='event-details-content' className='center'>
-      <p>Fetching event data...</p>
+    content = <div id='event-details-content' className='center' style={{backgroundColor: "transparent"}}>
       <ErrorBlock title={"Error occured while fetching event details"} message={error.info?.message || "Try again later"} />
     </div>
   }
@@ -94,6 +93,7 @@ export default function EventDetails() {
                 <button onClick={handleDeleteEvent} className='button'>Delete</button>
               </>
             }
+            {isDeletingError && <ErrorBlock title={"Error occured deleting the event details"} message={deletingError.info?.message || "Try again later"} />}
           </div>
         </div>
       </Modal>}
